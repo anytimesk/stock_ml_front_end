@@ -4,6 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
 import { StockData, StockResponse, TableHeader, TableConfig } from '../types/stock';
 import DataTable from './DataTable';
+import CandlestickChart from './CandlestickChart';
 
 export default function SearchStock() {
     const { isDarkMode } = useTheme();
@@ -168,6 +169,12 @@ export default function SearchStock() {
                 >
                     {loading ? '로딩...' : '조회'}
                 </button>
+            </div>
+
+            <div className="mb-6 w-full">
+                {stockData && stockData.length > 0 && stockInfo?.name && (
+                    <CandlestickChart data={stockData} stockName={stockInfo.name} />
+                )}
             </div>
 
             {/* 결과 테이블 (DataTable 컴포넌트 사용) */}
