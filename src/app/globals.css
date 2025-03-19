@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
+    /* 기본 CSS 변수는 ThemeContext에서 동적으로 설정됩니다 */
     --background: #fafafa;
     --foreground: #0a0a0a;
+    --cardBackground: #ffffff;
+    --borderColor: #e5e7eb;
+    --shadowColor: rgba(0, 0, 0, 0.1);
 }
 
 html {
@@ -26,4 +30,24 @@ body {
     background: var(--background);
     color: var(--foreground);
     font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 카드, 테이블 등의 공통 스타일에 CSS 변수 사용 */
+.card {
+    background-color: var(--cardBackground);
+    border: 1px solid var(--borderColor);
+    box-shadow: 0 4px 6px var(--shadowColor);
+}
+
+/* 다크 모드에서는 CSS 변수가 JS에서 자동으로 업데이트됩니다 */
+.dark button.default {
+    background-color: var(--cardBackground);
+    color: var(--foreground);
+    border: 1px solid var(--borderColor);
+}
+
+/* 라이트 모드에서의 기본 버튼 스타일 */
+button.default {
+    background-color: var(--foreground);
+    color: var(--background);
 }
