@@ -17,6 +17,23 @@ export interface StockData {
     mrktTotAmt: string;    // 시가총액
 }
 
+// 테이블 헤더 정보 타입 정의
+export interface TableHeader {
+    key: string;          // 데이터 객체의 키
+    label: string;        // 화면에 표시할 헤더 텍스트
+    formatter?: (value: string) => string;  // 값 형식화 함수 (옵션)
+    className?: string;   // 특정 열에 적용할 CSS 클래스 (옵션)
+}
+
+// 테이블 구성 정보 타입
+export interface TableConfig {
+    headers: TableHeader[];      // 테이블 헤더 배열
+    data: StockData[];           // 테이블 데이터 배열
+    title?: string;              // 테이블 제목 (옵션)
+    totalCount?: number;         // 전체 데이터 수 (옵션)
+    itemsPerPage?: number;       // 페이지당 표시할 항목 수 (옵션)
+}
+
 // 추가 관련 타입도 여기에 정의할 수 있습니다
 export interface StockResponse {
     response: {

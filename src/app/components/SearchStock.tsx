@@ -2,7 +2,8 @@
 
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
-import {StockData, StockResponse } from '../types/stock';
+import { StockData, StockResponse, TableHeader, TableConfig } from '../types/stock';
+import DataTable from './DataTable';
 
 export default function SearchStock() {
     const { isDarkMode } = useTheme();
@@ -10,6 +11,41 @@ export default function SearchStock() {
     const [error, setError] = useState<string | null>(null);
     const [stockData, setStockData] = useState<StockData[] | null>(null);
     const [stockInfo, setStockInfo] = useState<{ name: string, totalCount: number } | null>(null);
+    const [tableConfig, setTableConfig] = useState<TableConfig | null>(null);
+
+    // 숫자 형식화 함수
+    const formatNumber = (numStr: string) => {
+        const num = parseFloat(numStr);
+        return isNaN(num) ? numStr : num.toLocaleString('ko-KR');
+    };
+
+    // 날짜 형식화 함수
+    const formatDate = (dateStr: string) => {
+        if (!dateStr || dateStr.length !== 8) return dateStr;
+        return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+    };
+
+    // 테이블 헤더 정의
+    const headers: TableHeader[] = [
+        { key: 'basDt', label: '기준일자', formatter: formatDate },
+        { key: 'itmsNm', label: '종목명' },
+        { key: 'mkp', label: '시가', formatter: formatNumber },
+        { key: 'hipr', label: '고가', formatter: formatNumber },
+        { key: 'lopr', label: '저가', formatter: formatNumber },
+        { key: 'clpr', label: '종가', formatter: formatNumber },
+        { 
+            key: 'vs', 
+            label: '전일대비', 
+            formatter: formatNumber,
+        },
+        { 
+            key: 'fltRt', 
+            label: '등락률',
+            formatter: (value) => `${value}%`
+        },
+        { key: 'trqu', label: '거래량', formatter: formatNumber },
+        { key: 'trPrc', label: '거래대금', formatter: formatNumber }
+    ];
 
     const searchStock = async () => {
         try {
@@ -17,6 +53,7 @@ export default function SearchStock() {
             setError(null);
             setStockData(null);
             setStockInfo(null);
+            setTableConfig(null);
             
             // 입력값 가져오기
             const stockName = (document.getElementById('itmsNm') as HTMLInputElement)?.value;
@@ -57,9 +94,20 @@ export default function SearchStock() {
                     : [data.response.body.items.item];
                 
                 setStockData(items);
+                
+                const totalCount = data.response.body.totalCount;
                 setStockInfo({
                     name: stockName,
-                    totalCount: items.length
+                    totalCount: totalCount
+                });
+                
+                // 테이블 구성 설정
+                setTableConfig({
+                    headers: headers,
+                    data: items,
+                    title: `${stockName} 주가 정보`,
+                    totalCount: totalCount,
+                    itemsPerPage: 10
                 });
             } else {
                 setError('데이터 형식이 올바르지 않습니다');
@@ -71,18 +119,6 @@ export default function SearchStock() {
         } finally {
             setLoading(false);
         }
-    };
-
-    // 숫자 형식화 함수
-    const formatNumber = (numStr: string) => {
-        const num = parseFloat(numStr);
-        return isNaN(num) ? numStr : num.toLocaleString('ko-KR');
-    };
-
-    // 날짜 형식화 함수
-    const formatDate = (dateStr: string) => {
-        if (!dateStr || dateStr.length !== 8) return dateStr;
-        return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
     };
 
     return (
@@ -115,7 +151,7 @@ export default function SearchStock() {
                         color: 'var(--foreground)'
                     }}
                 >
-                    <option value="60">60</option>
+                    <option value="10">10</option>
                     <option value="90">90</option>
                     <option value="180">180</option>
                     <option value="365">365</option>
@@ -124,7 +160,7 @@ export default function SearchStock() {
                 <button
                     onClick={searchStock}
                     disabled={loading}
-                    className={`px-3 py-1 rounded-md transition-colors min-w-[60px] ${
+                    className={`px-3 py-1 rounded-md transition-colors min-w-[70px] ${
                         isDarkMode 
                             ? 'bg-neutral-50 text-neutral-950 hover:bg-neutral-400' 
                             : 'bg-neutral-950 text-neutral-50 hover:bg-neutral-400'
@@ -134,67 +170,8 @@ export default function SearchStock() {
                 </button>
             </div>
 
-            {/* 결과 테이블 */}
-            {stockData && stockData.length > 0 && (
-                <div className="w-full">
-                    <div className="mb-4">
-                        <h2 className="text-xl font-bold">
-                            {stockInfo?.name} 주가 정보 (총 {stockInfo?.totalCount || stockData.length}건)
-                        </h2>
-                    </div>
-                    
-                    <div className="overflow-x-auto rounded-lg shadow-sm">
-                        <table className="min-w-full bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                            <thead>
-                                <tr className="bg-gray-50 dark:bg-gray-700">
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">기준일자</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">종목명</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">시가</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">고가</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">저가</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">종가</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">전일대비</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">등락률</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">거래량</th>
-                                    <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">거래대금</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {stockData.map((item, index) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'}>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatDate(item.basDt)}</td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{item.itmsNm}</td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatNumber(item.mkp)}</td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatNumber(item.hipr)}</td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatNumber(item.lopr)}</td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatNumber(item.clpr)}</td>
-                                        <td className={`px-4 py-2 border-b border-gray-200 dark:border-gray-600 ${
-                                            parseFloat(item.vs) > 0 
-                                                ? 'text-red-500' 
-                                                : parseFloat(item.vs) < 0 
-                                                    ? 'text-blue-500' 
-                                                    : 'text-gray-700 dark:text-gray-200'
-                                        }`}>
-                                            {formatNumber(item.vs)}
-                                        </td>
-                                        <td className={`px-4 py-2 border-b border-gray-200 dark:border-gray-600 ${
-                                            parseFloat(item.fltRt) > 0 
-                                                ? 'text-red-500' 
-                                                : parseFloat(item.fltRt) < 0 
-                                                    ? 'text-blue-500' 
-                                                    : 'text-gray-700 dark:text-gray-200'
-                                        }`}>
-                                            {item.fltRt}%
-                                        </td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatNumber(item.trqu)}</td>
-                                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">{formatNumber(item.trPrc)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
+            {/* 결과 테이블 (DataTable 컴포넌트 사용) */}
+            {tableConfig && <DataTable {...tableConfig} />}
             
             {loading && (
                 <div className="flex justify-center items-center w-full p-8">
