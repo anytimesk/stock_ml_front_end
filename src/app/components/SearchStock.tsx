@@ -36,7 +36,7 @@ export default function SearchStock() {
             
             // API 호출
             //console.log(`API 요청: 종목명=${stockName}, 데이터 수=${numOfRows}`);
-            const response = await fetch(`http://localhost:8000/stock/search?${params.toString()}`, {
+            const response = await fetch(`http://localhost:8000/stock/getStockPriceInfo?${params.toString()}`, {
                 method: 'GET',
                 headers: {
                     'accept': 'application/json'
