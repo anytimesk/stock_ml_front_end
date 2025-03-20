@@ -2,7 +2,7 @@
 
 import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
-import { StockData, StockResponse, TableHeader, TableConfig } from '../types/stock';
+import { StockData, StockResponse, TableHeader, TableConfig } from '@/types/stock';
 import DataTable from './DataTable';
 import CandlestickChart from './CandlestickChart';
 

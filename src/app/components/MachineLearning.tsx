@@ -2,29 +2,7 @@
 
 import { useTheme } from '../contexts/ThemeContext';
 import { useState, useEffect } from 'react';
-
-interface StockCSV {
-    filename: string;
-    stockName: string;
-    createdAt: string;
-    sizeBytes: number;
-    stockCode: string;
-    path: string;
-}
-
-interface ApiResponse {
-    success: boolean;
-    message: string;
-    files: Array<{
-        filename: string;
-        path: string;
-        size_bytes: number;
-        created_at: string;
-        stock_code: string;
-        stock_name: string;
-    }>;
-    count: number;
-}
+import { StockCSV, ApiResponse } from '@/types/stock';
 
 export default function MachineLearning() {
     const { isDarkMode } = useTheme();

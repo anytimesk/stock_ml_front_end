@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '../contexts/ThemeContext';
-import { TableConfig } from '../types/stock';
+import { TableConfig } from '@/types/stock';
 import { useState, useEffect } from 'react';
 
 export default function DataTable({ headers, data, title, totalCount, itemsPerPage = 15 }: TableConfig) {

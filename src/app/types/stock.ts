@@ -51,3 +51,28 @@ export interface StockResponse {
         };
     };
 }
+
+// 주식 CSV 파일 정보 인터페이스
+export interface StockCSV {
+    filename: string;
+    stockName: string;
+    createdAt: string;
+    sizeBytes: number;
+    stockCode: string;
+    path: string;
+}
+
+// API 응답 인터페이스
+export interface ApiResponse {
+    success: boolean;
+    message: string;
+    files: Array<{
+        filename: string;
+        path: string;
+        size_bytes: number;
+        created_at: string;
+        stock_code: string;
+        stock_name: string;
+    }>;
+    count: number;
+}
