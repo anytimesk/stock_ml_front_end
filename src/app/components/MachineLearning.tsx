@@ -2,7 +2,7 @@
 
 import { useTheme } from '../contexts/ThemeContext';
 import { useState, useEffect } from 'react';
-import { StockCSV, ApiResponse, TableHeader } from '@/types/stock';
+import { StockCSV, StockCSVFileList, TableHeader } from '@/types/stock';
 import DataTable from './DataTable';
 
 type ModelType = 'LSTM' | 'RNN';
@@ -37,10 +37,10 @@ export default function MachineLearning() {
     // 테이블 헤더 설정
     const headers: TableHeader[] = [
         { key: 'filename', label: '파일명' },
-        { key: 'stockName', label: '종목명' },
-        { key: 'stockCode', label: '종목코드' },
-        { key: 'createdAt', label: '생성일', formatter: formatDate },
-        { key: 'sizeBytes', label: '파일 크기', formatter: (value) => formatFileSize(Number(value)) }
+        { key: 'stock_name', label: '종목명' },
+        { key: 'isin_code', label: '종목코드' },
+        { key: 'created_at', label: '생성일', formatter: formatDate },
+        { key: 'size_bytes', label: '파일 크기', formatter: (value) => formatFileSize(Number(value)) }
     ];
 
     // CSV 파일 목록 가져오기
@@ -60,17 +60,17 @@ export default function MachineLearning() {
                 return;
             }
             
-            const data: ApiResponse = await response.json();
+            const data: StockCSVFileList = await response.json();
             
             if (data.success) {
                 // API 응답 구조에 맞게 데이터 매핑
                 const mappedFiles = data.files.map(file => ({
                     filename: file.filename,
                     path: file.path,
-                    sizeBytes: file.size_bytes,
-                    createdAt: file.created_at,
-                    stockCode: file.stock_code,
-                    stockName: file.stock_name
+                    size_bytes: file.size_bytes,
+                    created_at: file.created_at,
+                    isin_code: file.isin_code,
+                    stock_name: file.stock_name
                 }));
                 
                 setCsvFiles(mappedFiles);
