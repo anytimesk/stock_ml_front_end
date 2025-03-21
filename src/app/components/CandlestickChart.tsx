@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { StockData } from '../types/stock';
+import { StockData } from '@/types/stock';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface CandlestickChartProps {

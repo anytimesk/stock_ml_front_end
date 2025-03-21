@@ -20,11 +20,11 @@ export default function Menu({ activeTab, onTabChange }: MenuProps) {
                             className={`px-4 py-2 rounded-md transition-colors ${
                                 activeTab === 'search' 
                                     ? isDarkMode 
-                                        ? 'bg-teal-500 text-white hover:bg-teal-400' 
-                                        : 'bg-teal-600 text-white hover:bg-teal-700'
+                                        ? 'bg-indigo-500 text-white hover:bg-indigo-400' 
+                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
                                     : isDarkMode
-                                        ? 'text-teal-200 hover:bg-teal-900 hover:text-teal-100' 
-                                        : 'text-teal-700 hover:bg-teal-50 hover:text-teal-800'
+                                        ? 'text-indigo-200 hover:bg-indigo-900 hover:text-indigo-100' 
+                                        : 'text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800'
                             }`}
                         >
                             조회
@@ -34,11 +34,11 @@ export default function Menu({ activeTab, onTabChange }: MenuProps) {
                             className={`px-4 py-2 rounded-md transition-colors ${
                                 activeTab === 'learning' 
                                     ? isDarkMode 
-                                        ? 'bg-teal-500 text-white hover:bg-teal-400' 
-                                        : 'bg-teal-600 text-white hover:bg-teal-700'
+                                        ? 'bg-indigo-500 text-white hover:bg-indigo-400' 
+                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
                                     : isDarkMode
-                                        ? 'text-teal-200 hover:bg-teal-900 hover:text-teal-100' 
-                                        : 'text-teal-700 hover:bg-teal-50 hover:text-teal-800'
+                                        ? 'text-indigo-200 hover:bg-indigo-900 hover:text-indigo-100' 
+                                        : 'text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800'
                             }`}
                         >
                             학습

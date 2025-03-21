@@ -2,7 +2,8 @@
 
 import { useTheme } from '../contexts/ThemeContext';
 import { useState, useEffect } from 'react';
-import { StockCSV, ApiResponse } from '@/types/stock';
+import { StockCSV, ApiResponse, TableHeader } from '@/types/stock';
+import DataTable from './DataTable';
 
 export default function MachineLearning() {
     const { isDarkMode } = useTheme();
@@ -28,6 +29,15 @@ export default function MachineLearning() {
         
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
+
+    // 테이블 헤더 설정
+    const headers: TableHeader[] = [
+        { key: 'filename', label: '파일명' },
+        { key: 'stockName', label: '종목명' },
+        { key: 'stockCode', label: '종목코드' },
+        { key: 'createdAt', label: '생성일', formatter: formatDate },
+        { key: 'sizeBytes', label: '파일 크기', formatter: (value) => formatFileSize(Number(value)) }
+    ];
 
     // CSV 파일 목록 가져오기
     const fetchCSVList = async () => {
@@ -153,7 +163,7 @@ export default function MachineLearning() {
                 {/* CSV 파일 목록 */}
                 <div>
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">CSV 파일 목록 ({totalCount})</h3>
+                        <h3 className="text-lg font-semibold">CSV 파일 목록</h3>
                         <button
                             onClick={fetchCSVList}
                             disabled={loading}
@@ -171,55 +181,13 @@ export default function MachineLearning() {
                         <div className="flex justify-center py-8">
                             <p>데이터 로딩 중...</p>
                         </div>
-                    ) : csvFiles.length > 0 ? (
-                        <div className="overflow-x-auto border rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-400">
-                                <thead className="bg-gray-100 dark:bg-gray-800">
-                                    <tr>
-                                        <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            파일명
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            종목명
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            종목코드
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            생성일
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            파일 크기
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                    {csvFiles.map((file, index) => (
-                                        <tr key={index} className="hover:bg-gray-100 dark:hover:bg-gray-400">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                {file.filename}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                {file.stockName}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                {file.stockCode}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                {formatDate(file.createdAt)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                {formatFileSize(file.sizeBytes)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
                     ) : (
-                        <div className="py-8 text-center">
-                            <p>저장된 CSV 파일이 없습니다. 새 종목 데이터를 생성해보세요.</p>
-                        </div>
+                        <DataTable<StockCSV>
+                            headers={headers}
+                            data={csvFiles}
+                            totalCount={totalCount}
+                            itemsPerPage={5}
+                        />
                     )}
                 </div>
             </div>

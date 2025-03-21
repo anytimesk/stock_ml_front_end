@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { TableConfig } from '@/types/stock';
 import { useState, useEffect } from 'react';
 
-export default function DataTable({ headers, data, title, totalCount, itemsPerPage = 15 }: TableConfig) {
+export default function DataTable<T>({ headers, data, title, totalCount, itemsPerPage = 15 }: TableConfig<T>) {
     const { isDarkMode } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
     const [paginatedData, setPaginatedData] = useState(data);
@@ -45,11 +45,13 @@ export default function DataTable({ headers, data, title, totalCount, itemsPerPa
             )}
             
             <div className="overflow-x-auto rounded-lg shadow-sm">
-                <table className="min-w-full bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <table className="min-w-full border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                     <thead>
-                        <tr className="bg-gray-50 dark:bg-gray-700">
+                        <tr className={`
+                            ${isDarkMode ? 'bg-indigo-800 text-indigo-50' : 'bg-indigo-200 text-indigo-950'}`
+                        }>
                             {headers.map((header, index) => (
-                                <th key={index} className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold text-gray-700 dark:text-gray-200">
+                                <th key={index} className="px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-left font-semibold">
                                     {header.label}
                                 </th>
                             ))}
@@ -57,13 +59,21 @@ export default function DataTable({ headers, data, title, totalCount, itemsPerPa
                     </thead>
                     <tbody>
                         {paginatedData.map((item, rowIndex) => (
-                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'}>
+                            <tr key={rowIndex} className={
+                                rowIndex % 2 === 0
+                                    ? isDarkMode
+                                        ? 'bg-gray-900 text-neutral-50 hover:bg-indigo-800'
+                                        : 'bg-white text-neutral-900 hover:bg-indigo-100'
+                                    : isDarkMode 
+                                        ? 'bg-gray-800 text-neutral-50 hover:bg-indigo-800' 
+                                        : 'bg-gray-100 text-neutral-900 hover:bg-indigo-100'
+                            }>
                                 {headers.map((header, colIndex) => {
                                     // 값 추출
-                                    const value = item[header.key as keyof typeof item] as string;
+                                    const value = item[header.key as keyof T] as string;
                                     
                                     // 특별한 스타일이 필요한 열 (등락률, 전일대비 등)
-                                    let className = "px-4 py-2 border-b border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200";
+                                    let className = "px-4 py-2 border-b border-gray-200 dark:border-gray-600 ";
                                     
                                     // 특별한 클래스가 정의되어 있는 경우 (등락률, 전일대비 등)
                                     if (header.className) {
@@ -101,10 +111,10 @@ export default function DataTable({ headers, data, title, totalCount, itemsPerPa
                         disabled={currentPage === 1}
                         className={`px-3 py-1 rounded-md ${
                             currentPage === 1 
-                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700' 
+                                ? 'bg-indigo-200 text-indigo-500 cursor-not-allowed dark:bg-indigo-700' 
                                 : isDarkMode 
-                                    ? 'bg-neutral-700 text-neutral-50 hover:bg-neutral-600' 
-                                    : 'bg-neutral-200 text-neutral-950 hover:bg-neutral-300'
+                                    ? 'bg-indigo-700 text-indigo-50 hover:bg-indigo-600' 
+                                    : 'bg-indigo-200 text-indigo-950 hover:bg-indigo-300'
                         }`}
                     >
                         처음
@@ -130,11 +140,11 @@ export default function DataTable({ headers, data, title, totalCount, itemsPerPa
                                         className={`w-8 h-8 flex items-center justify-center rounded-md ${
                                             currentPage === pageNumToShow
                                                 ? isDarkMode
-                                                    ? 'bg-neutral-50 text-neutral-950'
-                                                    : 'bg-neutral-950 text-neutral-50'
+                                                    ? 'bg-indigo-50 text-indigo-950'
+                                                    : 'bg-indigo-950 text-indigo-50'
                                                 : isDarkMode
-                                                    ? 'bg-neutral-700 text-neutral-50 hover:bg-neutral-600'
-                                                    : 'bg-neutral-200 text-neutral-950 hover:bg-neutral-300'
+                                                    ? 'bg-indigo-700 text-indigo-50 hover:bg-indigo-600'
+                                                    : 'bg-indigo-200 text-indigo-950 hover:bg-indigo-300'
                                         }`}
                                     >
                                         {pageNumToShow}
@@ -150,10 +160,10 @@ export default function DataTable({ headers, data, title, totalCount, itemsPerPa
                         disabled={currentPage === totalPages}
                         className={`px-3 py-1 rounded-md ${
                             currentPage === totalPages 
-                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700' 
+                                ? 'bg-indigo-200 text-indigo-500 cursor-not-allowed dark:bg-indigo-700' 
                                 : isDarkMode 
-                                    ? 'bg-neutral-700 text-neutral-50 hover:bg-neutral-600' 
-                                    : 'bg-neutral-200 text-neutral-950 hover:bg-neutral-300'
+                                    ? 'bg-indigo-700 text-indigo-50 hover:bg-indigo-600' 
+                                    : 'bg-indigo-200 text-indigo-950 hover:bg-indigo-300'
                         }`}
                     >
                         마지막
