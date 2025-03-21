@@ -15,6 +15,7 @@ export default function MachineLearning() {
     const [stockName, setStockName] = useState('');
     const [totalCount, setTotalCount] = useState(0);
     const [selectedModel, setSelectedModel] = useState<ModelType>('LSTM');
+    const [trainingResult, setTrainingResult] = useState<string>('');
 
     // 날짜 형식화 함수
     const formatDate = (dateStr: string) => {
@@ -125,6 +126,39 @@ export default function MachineLearning() {
         }
     };
 
+    // 머신러닝 학습 시작
+    const startMachineLearning = async () => {
+        try {
+            setTrainingResult('학습 중...');
+            const params = new URLSearchParams({
+                isin_code: "KR7005380001",
+                model_type: selectedModel.toLowerCase(),
+                time_steps: "3",
+                epochs: "50",
+                batch_size: "32",
+                validation_split: "0.2"
+            });
+
+            const response = await fetch(`http://localhost:8000/ml/trainModel?${params.toString()}`, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json'
+                },
+                body: ''
+            });
+
+            if (!response.ok) {
+                throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            setTrainingResult(JSON.stringify(result, null, 2));
+        } catch (err) {
+            console.error('머신러닝 학습 중 오류 발생:', err);
+            setTrainingResult(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다');
+        }
+    };
+
     // 페이지 로드 시 CSV 파일 목록 가져오기
     useEffect(() => {
         fetchCSVList();
@@ -132,16 +166,15 @@ export default function MachineLearning() {
 
     return (
         <div className="flex flex-col w-full">
-            <div className="p-6 mb-6 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold mb-6">머신러닝 분석</h2>
-                
+            <h2 className="text-2xl font-bold">머신러닝 분석</h2>
+            <div className="flex flex-row mt-2">
                 {/* 모델 선택 버튼 */}
-                <div className="mb-8 p-4 border dark:border-gray-700 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">모델 선택</h3>
+                <div className="w-1/2 p-3 rounded-lg shadow-sm border dark:border-gray-700 rounded-lg">
+                    <h3 className="text-lg font-semibold">모델 선택</h3>
                     <div className="flex space-x-4">
-                        <button 
+                        <button
                             onClick={() => setSelectedModel('LSTM')}
-                            className={`px-4 py-2 rounded-md transition-colors ${
+                            className={`px-4 py-2 text-sm rounded-md transition-colors ${
                                 selectedModel === 'LSTM'
                                     ? isDarkMode
                                         ? 'bg-indigo-600 text-white hover:bg-indigo-700'
@@ -155,7 +188,7 @@ export default function MachineLearning() {
                         </button>
                         <button 
                             onClick={() => setSelectedModel('RNN')}
-                            className={`px-4 py-2 rounded-md transition-colors ${
+                            className={`px-4 py-2 text-sm rounded-md transition-colors ${
                                 selectedModel === 'RNN'
                                     ? isDarkMode
                                         ? 'bg-indigo-600 text-white hover:bg-indigo-700'
@@ -169,10 +202,36 @@ export default function MachineLearning() {
                         </button>
                     </div>
                 </div>
+                <div className="w-[10px]"></div>
+                <div className="w-1/2 p-3 rounded-lg shadow-sm border dark:border-gray-700 rounded-lg">
+                    <h3 className="text-lg font-semibold">모델 실행</h3>
+                    <div className="flex space-x-4">
+                        <button
+                            onClick={startMachineLearning}
+                            className={`px-4 py-2 text-sm rounded-md transition-colors ${
+                                isDarkMode
+                                    ? 'bg-green-600 text-white hover:bg-green-700'
+                                    : 'bg-green-500 text-white hover:bg-green-600'
+                            }`}
+                        >
+                            머신러닝 학습 시작
+                        </button>
+                    </div>
+                    <div className="mt-2 border rounded-md p-2">
+                        <p className="text-sm font-semibold mb-2">학습 결과</p>
+                        <pre className={`text-sm overflow-auto max-h-40 ${
+                            isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                            {trainingResult}
+                        </pre>
+                    </div>
+                </div>
+            </div>
 
+            <div className="flex flex-row mt-2">
                 {/* 새 CSV 파일 생성 폼 */}
-                <div className="mb-8 p-4 border dark:border-gray-700 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">새 종목 데이터 CSV 생성</h3>
+                <div className="w-full p-3 rounded-lg shadow-sm border dark:border-gray-700 rounded-lg">
+                    <h3 className="text-lg font-semibold">새 종목 데이터 CSV 생성</h3>
                     <div className="flex flex-row items-center">
                         <input
                             type="text"
@@ -197,9 +256,11 @@ export default function MachineLearning() {
                         * 종목명을 정확히 입력해주세요. CSV 생성에는 시간이 소요될 수 있습니다.
                     </p>
                 </div>
-                
+            </div>
+
+            <div className="flex flex-row mt-2">
                 {/* CSV 파일 목록 */}
-                <div>
+                <div className="w-full p-3 rounded-lg shadow-sm border dark:border-gray-700 rounded-lg">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold">CSV 파일 목록</h3>
                         <button
@@ -220,12 +281,14 @@ export default function MachineLearning() {
                             <p>데이터 로딩 중...</p>
                         </div>
                     ) : (
-                        <DataTable<StockCSV>
-                            headers={headers}
-                            data={csvFiles}
-                            totalCount={totalCount}
-                            itemsPerPage={5}
-                        />
+                        <>
+                            <DataTable<StockCSV>
+                                headers={headers}
+                                data={csvFiles}
+                                totalCount={totalCount}
+                                itemsPerPage={5}
+                            />
+                        </>
                     )}
                 </div>
             </div>
