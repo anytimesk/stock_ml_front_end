@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { StockCSV, ApiResponse, TableHeader } from '@/types/stock';
 import DataTable from './DataTable';
 
+type ModelType = 'LSTM' | 'RNN';
+
 export default function MachineLearning() {
     const { isDarkMode } = useTheme();
     const [csvFiles, setCsvFiles] = useState<StockCSV[]>([]);
@@ -12,6 +14,7 @@ export default function MachineLearning() {
     const [creating, setCreating] = useState(false);
     const [stockName, setStockName] = useState('');
     const [totalCount, setTotalCount] = useState(0);
+    const [selectedModel, setSelectedModel] = useState<ModelType>('LSTM');
 
     // 날짜 형식화 함수
     const formatDate = (dateStr: string) => {
@@ -132,6 +135,41 @@ export default function MachineLearning() {
             <div className="p-6 mb-6 rounded-lg shadow-sm">
                 <h2 className="text-2xl font-bold mb-6">머신러닝 분석</h2>
                 
+                {/* 모델 선택 버튼 */}
+                <div className="mb-8 p-4 border dark:border-gray-700 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-4">모델 선택</h3>
+                    <div className="flex space-x-4">
+                        <button 
+                            onClick={() => setSelectedModel('LSTM')}
+                            className={`px-4 py-2 rounded-md transition-colors ${
+                                selectedModel === 'LSTM'
+                                    ? isDarkMode
+                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                    : isDarkMode
+                                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                        >
+                            LSTM
+                        </button>
+                        <button 
+                            onClick={() => setSelectedModel('RNN')}
+                            className={`px-4 py-2 rounded-md transition-colors ${
+                                selectedModel === 'RNN'
+                                    ? isDarkMode
+                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                    : isDarkMode
+                                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                        >
+                            RNN
+                        </button>
+                    </div>
+                </div>
+
                 {/* 새 CSV 파일 생성 폼 */}
                 <div className="mb-8 p-4 border dark:border-gray-700 rounded-lg">
                     <h3 className="text-lg font-semibold mb-4">새 종목 데이터 CSV 생성</h3>
@@ -148,8 +186,8 @@ export default function MachineLearning() {
                             disabled={creating || !stockName.trim()}
                             className={`ml-2 px-4 py-2 rounded-md transition-colors ${
                                 isDarkMode 
-                                    ? 'bg-teal-500 text-white hover:bg-teal-400 disabled:bg-gray-600 disabled:text-gray-400' 
-                                    : 'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-300 disabled:text-gray-500'
+                                    ? 'bg-indigo-800 text-white hover:bg-indigo-500 disabled:bg-indigo-300 disabled:text-indigo-200' 
+                                    : 'bg-indigo-500 text-white hover:bg-indigo-800 disabled:bg-indigo-300 disabled:text-indigo-200'
                             }`}
                         >
                             {creating ? '생성 중...' : 'CSV 생성'}
