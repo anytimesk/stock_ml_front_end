@@ -284,13 +284,69 @@ export default function MachineLearning() {
                             <SelectableDataTable
                                 headers={headers}
                                 data={csvFiles}
-                                title="CSV 파일 목록"
                                 onSelectionChange={(items) => setSelectedItems(items)}
                                 selectable={true}
                                 itemsPerPage={3}
                             />
                         </>
                     )}
+                </div>
+            </div>
+
+            <div className="flex flex-row mt-2">
+                {/* 머신러닝을 통한 주가 예측 */}
+                <div className="w-full p-3 rounded-lg shadow-sm border dark:border-gray-700 rounded-lg">
+                    <h3 className="text-lg font-semibold">주가 예측</h3>
+                    <div className="flex space-x-4 mt-2">
+                        <button
+                            onClick={async () => {
+                                if (selectedItems.length === 0) {
+                                    alert('예측할 종목을 선택해주세요.');
+                                    return;
+                                }
+
+                                try {
+                                    const params = new URLSearchParams({
+                                        model_type: selectedModel.toLowerCase()
+                                    });
+
+                                    const response = await fetch(
+                                        `${API_CONFIG.baseURL}/ml/predict/${selectedItems[0].isin_code}?${params.toString()}`,
+                                        {
+                                            ...API_CONFIG.defaultOptions,
+                                            method: 'POST',
+                                            body: ''
+                                        }
+                                    );
+
+                                    if (!response.ok) {
+                                        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+                                    }
+
+                                    const result = await response.json();
+                                    setTrainingResult(JSON.stringify(result, null, 2));
+                                } catch (err) {
+                                    console.error('주가 예측 중 오류 발생:', err);
+                                    setTrainingResult(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다');
+                                }
+                            }}
+                            className={`px-4 py-2 text-sm rounded-md transition-colors ${
+                                isDarkMode
+                                    ? 'bg-purple-600 text-white hover:bg-purple-700'
+                                    : 'bg-purple-500 text-white hover:bg-purple-600'
+                            }`}
+                        >
+                            주가 예측 시작
+                        </button>
+                    </div>
+                    <div className="mt-2 border rounded-md p-2">
+                        <p className="text-sm font-semibold mb-2">예측 결과</p>
+                        <pre className={`text-sm overflow-auto max-h-40 ${
+                            isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                            {trainingResult}
+                        </pre>
+                    </div>
                 </div>
             </div>
         </div>
