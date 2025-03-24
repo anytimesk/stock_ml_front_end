@@ -4,6 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useState } from 'react';
 import { StockData, StockResponse, TableHeader, TableConfig } from '@/types/stock';
 import DataTable from './DataTable';
+import { API_CONFIG } from '@/config/api';
 import CandlestickChart from './CandlestickChart';
 
 export default function SearchStock() {
@@ -74,11 +75,9 @@ export default function SearchStock() {
             
             // API 호출
             //console.log(`API 요청: 종목명=${stockName}, 데이터 수=${numOfRows}`);
-            const response = await fetch(`http://localhost:8000/stock/getStockPriceInfo?${params.toString()}`, {
+            const response = await fetch(`${API_CONFIG.baseURL}/stock/getStockPriceInfo?${params.toString()}`, {
+                ...API_CONFIG.defaultOptions,
                 method: 'GET',
-                headers: {
-                    'accept': 'application/json'
-                }
             });
             
             if (!response.ok) {

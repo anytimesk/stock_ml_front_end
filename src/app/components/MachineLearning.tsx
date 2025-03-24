@@ -3,7 +3,8 @@
 import { useTheme } from '../contexts/ThemeContext';
 import { useState, useEffect } from 'react';
 import { StockCSV, StockCSVFileList, TableHeader } from '@/types/stock';
-import DataTable from './DataTable';
+import SelectableDataTable from './SelectableDataTable';
+import { API_CONFIG } from '@/config/api';
 
 type ModelType = 'LSTM' | 'RNN';
 
@@ -48,11 +49,9 @@ export default function MachineLearning() {
         try {
             setLoading(true);
             
-            const response = await fetch('http://localhost:8000/ml/getStockData', {
+            const response = await fetch(`${API_CONFIG.baseURL}/ml/getStockData`, {
+                ...API_CONFIG.defaultOptions,
                 method: 'GET',
-                headers: {
-                    'accept': 'application/json'
-                }
             });
             
             if (!response.ok) {
@@ -100,11 +99,9 @@ export default function MachineLearning() {
                 itmsNm: stockName
             });
             
-            const response = await fetch(`http://localhost:8000/ml/saveStockDataCSV?${params.toString()}`, {
+            const response = await fetch(`${API_CONFIG.baseURL}/ml/saveStockDataCSV?${params.toString()}`, {
+                ...API_CONFIG.defaultOptions,
                 method: 'GET',
-                headers: {
-                    'accept': 'application/json'
-                }
             });
             
             if (!response.ok) {
@@ -139,11 +136,9 @@ export default function MachineLearning() {
                 validation_split: "0.2"
             });
 
-            const response = await fetch(`http://localhost:8000/ml/trainModel?${params.toString()}`, {
+            const response = await fetch(`${API_CONFIG.baseURL}/ml/trainModel?${params.toString()}`, {
+                ...API_CONFIG.defaultOptions,
                 method: 'POST',
-                headers: {
-                    'accept': 'application/json'
-                },
                 body: ''
             });
 
@@ -282,7 +277,7 @@ export default function MachineLearning() {
                         </div>
                     ) : (
                         <>
-                            <DataTable<StockCSV>
+                            <SelectableDataTable<StockCSV>
                                 headers={headers}
                                 data={csvFiles}
                                 totalCount={totalCount}
