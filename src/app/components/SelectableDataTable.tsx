@@ -13,7 +13,6 @@ export default function SelectableDataTable<T>({
     headers, 
     data, 
     title, 
-    totalCount, 
     itemsPerPage = 15,
     onSelectionChange,
     selectable = true

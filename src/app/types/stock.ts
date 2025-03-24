@@ -30,7 +30,6 @@ export interface TableConfig<T = any> {
     headers: TableHeader[];      // 테이블 헤더 배열
     data: T[];                   // 테이블 데이터 배열
     title?: string;              // 테이블 제목 (옵션)
-    totalCount?: number;         // 전체 데이터 수 (옵션)
     itemsPerPage?: number;       // 페이지당 표시할 항목 수 (옵션)
 }
 

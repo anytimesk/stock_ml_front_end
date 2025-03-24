@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { TableConfig } from '@/types/stock';
 import { useState, useEffect } from 'react';
 
-export default function DataTable<T>({ headers, data, title, totalCount, itemsPerPage = 15 }: TableConfig<T>) {
+export default function DataTable<T>({ headers, data, title, itemsPerPage = 15 }: TableConfig<T>) {
     const { isDarkMode } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
     const [paginatedData, setPaginatedData] = useState(data);

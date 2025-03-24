@@ -14,9 +14,9 @@ export default function MachineLearning() {
     const [loading, setLoading] = useState(false);
     const [creating, setCreating] = useState(false);
     const [stockName, setStockName] = useState('');
-    const [totalCount, setTotalCount] = useState(0);
     const [selectedModel, setSelectedModel] = useState<ModelType>('LSTM');
     const [trainingResult, setTrainingResult] = useState<string>('');
+    const [selectedItems, setSelectedItems] = useState<StockCSV[]>([]);
 
     // 날짜 형식화 함수
     const formatDate = (dateStr: string) => {
@@ -73,7 +73,6 @@ export default function MachineLearning() {
                 }));
                 
                 setCsvFiles(mappedFiles);
-                setTotalCount(data.count);
             } else {
                 console.error(data.message || '데이터를 가져오는 데 실패했습니다.');
             }
@@ -125,10 +124,15 @@ export default function MachineLearning() {
 
     // 머신러닝 학습 시작
     const startMachineLearning = async () => {
+        if (selectedItems.length === 0) {
+            alert('학습할 종목을 선택해주세요.');
+            return;
+        }
+
         try {
             setTrainingResult('학습 중...');
             const params = new URLSearchParams({
-                isin_code: "KR7005380001",
+                isin_code: selectedItems[0].isin_code,
                 model_type: selectedModel.toLowerCase(),
                 time_steps: "3",
                 epochs: "50",
@@ -277,11 +281,13 @@ export default function MachineLearning() {
                         </div>
                     ) : (
                         <>
-                            <SelectableDataTable<StockCSV>
+                            <SelectableDataTable
                                 headers={headers}
                                 data={csvFiles}
-                                totalCount={totalCount}
-                                itemsPerPage={5}
+                                title="CSV 파일 목록"
+                                onSelectionChange={(items) => setSelectedItems(items)}
+                                selectable={true}
+                                itemsPerPage={3}
                             />
                         </>
                     )}

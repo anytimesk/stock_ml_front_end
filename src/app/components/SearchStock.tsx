@@ -12,7 +12,7 @@ export default function SearchStock() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [stockData, setStockData] = useState<StockData[] | null>(null);
-    const [stockInfo, setStockInfo] = useState<{ name: string, totalCount: number } | null>(null);
+    const [stockInfo, setStockInfo] = useState<{ name: string } | null>(null);
     const [tableConfig, setTableConfig] = useState<TableConfig | null>(null);
 
     // 숫자 형식화 함수
@@ -95,10 +95,8 @@ export default function SearchStock() {
                 
                 setStockData(items);
                 
-                const totalCount = data.response.body.totalCount;
                 setStockInfo({
-                    name: stockName,
-                    totalCount: totalCount
+                    name: stockName
                 });
                 
                 // 테이블 구성 설정
@@ -106,7 +104,6 @@ export default function SearchStock() {
                     headers: headers,
                     data: items,
                     title: `${stockName} 주가 정보`,
-                    totalCount: totalCount,
                     itemsPerPage: 10
                 });
             } else {
